@@ -1,0 +1,144 @@
+<!--<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">-->
+<!--<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>-->
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+<!------ Include the above in your HEAD tag ---------->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>My Awesome Login Page</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js"></script>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+    <style>
+		body,
+		html {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			background: #60a3bc !important;
+		}
+		.user_card {
+			height: 400px;
+			width: 350px;
+			margin-top: auto;
+			margin-bottom: auto;
+			background: #f39c12;
+			position: relative;
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			padding: 10px;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			border-radius: 5px;
+
+		}
+		.login_btn {
+			width: 100%;
+			background: #c0392b !important;
+			color: white !important;
+		}
+
+		.logout_btn {
+			width: 100%;
+			background: forestgreen !important;
+			color: white !important;
+
+		}
+
+		.login_btn:focus {
+			box-shadow: none !important;
+			outline: 0px !important;
+		}
+		.custom-checkbox .custom-control-input:checked~.custom-control-label::before {
+			background-color: #c0392b !important;
+		}
+
+		.text-color-white {
+			color: whitesmoke;
+		}
+    </style>
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			// sending a connect request to the server.
+			var socket = null;
+
+			// An event handler for a change of value
+			// $('input.sync').on('input', function(event) {
+			// 	console.log('Sending slider change event.');
+            //     socket.emit('Slider value changed', {who: $(this).attr('id'), data: $(this).val()});
+            //     return false;
+            // });
+
+			$('#start_button').on('click', function(event) {
+			  event.preventDefault(); // To prevent following the link (optional)
+				  setStatus('Connecting');
+				  socket = io.connect('http://localhost:5000');
+				  socket.on('connected', onAfterSocketConnect);
+				  socket.on('speed_change', onUpdateAvailable);
+			});
+
+			$('#stop_button').on('click', function(event) {
+			  event.preventDefault(); // To prevent following the link (optional)
+			  if(socket){
+			  	socket.close();
+			  	socket = null;
+			  	setStatus('Not connected');
+			  }
+			});
+
+            const onAfterSocketConnect = (msg) => {
+            	console.log('After connect', msg);
+				setStatus('Connected');
+            };
+
+            const onUpdateAvailable = (msg) => {
+            	const dt = new Date(msg.ts);
+            	const time_value = dt.getHours()+':'+dt.getMinutes()+':'+dt.getSeconds();
+            	$('.message_value').text(msg.speed);
+            	$('.message_time').text(time_value);
+            };
+
+            const setStatus = (status) => {
+				$('.connection_status').text('Status: ' + status);
+			};
+
+				setStatus('Not connected');
+            onUpdateAvailable({'speed': '0', 'ts': new Date()});
+		});
+	</script>
+
+</head>
+<body>
+	<div class="container h-100">
+		<div class="d-flex justify-content-center h-100">
+			<div class="user_card">
+				<h1 class="text-center text-color-white"> Demo Web Socket </h1>
+				<hr/>
+				<h5 class="text-center connection_status">Status: Not Connected</h5>
+				<h6 class="text-center text-muted message_time" >00:00:00</h6>
+				<h1 class="display-1 message_value text-center">
+					N/A
+				</h1>
+				<div class="row">
+					<button id="start_button"
+							type="button"
+							name="button"
+							class="btn logout_btn col-sm-4 offset-sm-1">Connect</button>
+					<button id="stop_button"
+							type="button"
+							name="button"
+							class="btn login_btn col-sm-4 offset-sm-1">Disconnect</button>
+				</div>
+
+			    <footer class="blockquote-footer text-center">by <cite>Impressico Business Solution</cite></footer>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
