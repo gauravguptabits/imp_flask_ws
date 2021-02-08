@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Synchronized Slider</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			// sending a connect request to the server.
+			var socket = null;
+
+			// An event handler for a change of value
+			// $('input.sync').on('input', function(event) {
+			// 	console.log('Sending slider change event.');
+            //     socket.emit('Slider value changed', {who: $(this).attr('id'), data: $(this).val()});
+            //     return false;
+            // });
+
+			$('#start_button').on('click', function(event) {
+			  event.preventDefault(); // To prevent following the link (optional)
+				  setStatus('Connecting');
+				  socket = io.connect('http://localhost:5000');
+				  socket.on('connected', onAfterSocketConnect);
+				  socket.on('speed_change', onUpdateAvailable);
+			});
+
+			$('#stop_button').on('click', function(event) {
+			  event.preventDefault(); // To prevent following the link (optional)
+			  if(socket){
+			  	socket.close();
+			  	socket = null;
+			  	setStatus('Not connected');
+			  }
+			});
+
+            const onAfterSocketConnect = (msg) => {
+            	console.log('After connect', msg);
+				setStatus('Connected');
+            };
+
+            const onUpdateAvailable = (msg) => {
+            	const dt = new Date(msg.ts);
+            	const time_value = dt.getHours()+':'+dt.getMinutes()+':'+dt.getSeconds();
+            	$('.message_value').text(msg.speed);
+            	$('.message_time').text(time_value);
+            };
+
+            const setStatus = (status) => {
+				$('.connection_status').text('Status: ' + status);
+			};
+
+				setStatus('Not connected');
+            onUpdateAvailable({'speed': '0', 'ts': new Date()});
+		});
+	</script>
+</head>
+<body>
+	<div class="container text-center">
+
+		<div class="card">
+		  <div class="row">
+			<h5 class="col-sm-8 connection_status">Status: Not Connected</h5>
+			<h6 class="col-sm-4 text-muted message_time" >00:00:00</h6>
+		  </div>
+			<div>
+				<h1 class="display-1 message_value">N/A</h1>
+			</div>
+		</div>
+
+		<div>
+			<button type="button" class="btn btn-success" id="start_button">Connect</button>
+			<button type="button" class="btn btn-danger" id="stop_button">Stop</button>
+		</div>
+	</div>
+</body>
+</html>
