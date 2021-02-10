@@ -34,7 +34,8 @@ def send_event(args):
     event_name = 'speed_change'
     payload = {
         'speed': current_speed,
-        'ts': int(time.time()) * 1000
+        'ts': int(time.time()) * 1000,
+        'text': 'Server log id - {0}'.format(current_speed)
     }
     logging.info('Sending: {}\t{}'.format(event_name, current_speed))
     socketio.emit(event_name, payload)
