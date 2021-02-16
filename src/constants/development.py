@@ -34,7 +34,7 @@ config = {
                 "class": "logging.handlers.RotatingFileHandler",
                 "level": "INFO",
                 "formatter": "default",
-                "filename": os.path.join(os.getenv('LOG_DIR'), "info.log"),
+                "filename": os.path.join(os.getcwd(), 'log', "info.log"),
                 "maxBytes": 10485760,
                 "backupCount": 20,
                 "encoding": "utf8"
@@ -43,7 +43,7 @@ config = {
                 "class": "logging.handlers.RotatingFileHandler",
                 "level": "ERROR",
                 "formatter": "default",
-                "filename": os.path.join(os.getenv('LOG_DIR'), "errors.log"),
+                "filename": os.path.join(os.getcwd(), 'log', "errors.log"),
                 "maxBytes": 10485760,
                 "backupCount": 20,
                 "encoding": "utf8"
