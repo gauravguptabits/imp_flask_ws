@@ -19,6 +19,11 @@ def register_virtual_device(socketio):
     return tl.start()
 
 
+def event_acknowledgement(args):
+    print('Acknowledgement received', args)
+    return
+
+
 def send_event(args):
     """
     Mimics as virtual device which generates the reading and broadcast the reading to all
@@ -38,5 +43,5 @@ def send_event(args):
         'text': 'Server log id - {0}'.format(current_speed)
     }
     logging.info('Sending: {}\t{}'.format(event_name, current_speed))
-    socketio.emit(event_name, payload)
+    socketio.emit(event_name, payload, callback=event_acknowledgement)
     return None
