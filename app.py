@@ -77,6 +77,9 @@ def register_virtual_device(enable_virtual_device=False):
 
 if __name__ == '__main__':
     register_virtual_device(config.get('enable_virtual_device'))
+    port = config.get('server', {}).get('port', None)
+    host = config.get('server', {}).get('host', None)
+    print('Starting server at - {0}:{1}'.format(host, port))
     socketio.run(app,
                  host=config.get('server', {}).get('host', None),
                  port=config.get('server', {}).get('port', None),
